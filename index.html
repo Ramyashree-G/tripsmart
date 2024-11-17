@@ -51,6 +51,16 @@
         .favorite-btn.added {
             background-color: #ff6666; /* Show different color if already added */
         }
+        .weather-info {
+            margin-top: 20px;
+            font-size: 18px;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+        .weather-info.dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -62,6 +72,11 @@
     <!-- Search bar to filter places -->
     <div id="search-container">
         <input type="text" id="search-bar" placeholder="Search for a place..." oninput="filterPlaces()" />
+    </div>
+
+    <!-- Weather Information -->
+    <div id="weather-container" class="weather-info">
+        <p id="weather-status">Loading weather...</p>
     </div>
     
     <!-- Map Container -->
@@ -82,6 +97,7 @@
         const darkModeToggle = document.getElementById('dark-mode-toggle');
         const body = document.body;
         const infoContainer = document.getElementById('info-container');
+        const weatherContainer = document.getElementById('weather-container');
         let isDarkMode = false;
 
         // Toggle dark mode
@@ -89,6 +105,7 @@
             isDarkMode = !isDarkMode;
             body.classList.toggle('dark-mode', isDarkMode);
             infoContainer.classList.toggle('dark-mode', isDarkMode);
+            weatherContainer.classList.toggle('dark-mode', isDarkMode);
             darkModeToggle.classList.toggle('dark-mode', isDarkMode);
             darkModeToggle.textContent = isDarkMode ? '🌞 Light Mode' : '🌙 Dark Mode';
         });
@@ -116,6 +133,12 @@
         let favoritePlaces = JSON.parse(localStorage.getItem('favoritePlaces')) || [];
         let markers = []; // Store the markers for later updating
         let routeControl = null; // Route control variable to be updated dynamically
+
+        // Mock weather data (simulating data from an API)
+        const mockWeatherData = {
+            temperature: 22, // in Celsius
+            description: "Sunny",
+        };
 
         // Function to create custom favorite icon
         function createFavoriteIcon() {
@@ -239,12 +262,25 @@
                 })
                 .catch(err => console.error('Error fetching places:', err));
 
+            // Display mock weather information
+            displayMockWeather();
+
             status.textContent = 'Location found!';
         }
 
         // Function to handle error (location failure)
         function onLocationError(error) {
             status.textContent = `Unable to retrieve your location: ${error.message}`;
+        }
+
+        // Function to display mock weather data
+        function displayMockWeather() {
+            const temperature = mockWeatherData.temperature;
+            const description = mockWeatherData.description;
+            document.getElementById('weather-status').innerHTML = `
+                <strong>Weather:</strong> ${description}<br/>
+                <strong>Temperature:</strong> ${temperature}°C
+            `;
         }
 
         // Use Geolocation API to get the current position
